@@ -10,7 +10,7 @@ const LeetCodeCalendar = ({ username }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`https://alfa-leetcode-api.onrender.com/${username}/calendar`);
+        const response = await fetch(`https://leetcode-api-faisalshohag.vercel.app/${username}`);
         if (!response.ok) throw new Error('Failed to fetch');
         
         const result = await response.json();
@@ -21,7 +21,9 @@ const LeetCodeCalendar = ({ username }) => {
            return;
         }
 
-        const calendarData = JSON.parse(result.submissionCalendar);
+        const calendarData = typeof result.submissionCalendar === 'string' 
+          ? JSON.parse(result.submissionCalendar) 
+          : result.submissionCalendar;
         
         // Convert UNIX timestamps to ActivityCalendar format
         const activityMap = new Map();
