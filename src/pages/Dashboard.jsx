@@ -3,6 +3,7 @@ import { GitHubCalendar } from 'react-github-calendar';
 import { ActivityCalendar } from 'react-activity-calendar';
 import LeetCodeCalendar from '../LeetCodeCalendar';
 import DailyQuote from '../components/DailyQuote';
+import TimeOnEarth from '../components/TimeOnEarth';
 import { DashboardCard, SectionHeader } from '../components/DashboardCard';
 import { useTheme } from '../components/ThemeProvider';
 import { Moon, Sun, Calendar, Edit3, PlusCircle, Check, Sparkles } from 'lucide-react';
@@ -198,6 +199,10 @@ export default function Dashboard() {
                   Add to Activity
                 </button>
               </form>
+            </DashboardCard>
+
+            <DashboardCard>
+              <TimeOnEarth />
             </DashboardCard>
 
             <DashboardCard className="flex-1 flex items-center justify-center">
