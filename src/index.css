@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 :root {
   --bg-dark: #0a0a0b;
   --bg-card: #161b22;
@@ -18,15 +20,19 @@
   padding: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   min-height: 100vh;
-  line-height: 1.5;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Hide scrollbars globally on overflow containers */
+/* ---- Scrollbar styling ---- */
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -35,7 +41,22 @@ body {
   scrollbar-width: none;
 }
 
-/* Kill ALL horizontal scrollbars site-wide — the black bars */
+/* Slim scrollbar for calendar containers */
+.calendar-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+.calendar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.calendar-scroll::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.25);
+  border-radius: 4px;
+}
+.calendar-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(128, 128, 128, 0.45);
+}
+
+/* Global subtle scrollbar */
 *::-webkit-scrollbar {
   width: 6px;
   height: 0px;
@@ -48,7 +69,7 @@ body {
   border-radius: 3px;
 }
 
-/* Only show vertical scrollbar on hover for scrollable areas */
+/* Scrollable area hover scrollbar */
 .scrollable-area::-webkit-scrollbar {
   width: 6px;
 }
@@ -58,4 +79,57 @@ body {
 }
 .scrollable-area::-webkit-scrollbar-thumb:hover {
   background: rgba(128, 128, 128, 0.5);
+}
+
+/* ---- Page layout ---- */
+.page-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-content {
+  flex: 1;
+}
+
+/* ---- Fade-in animation ---- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeInUp 0.5s ease-out both;
+}
+
+.animate-fade-in-delay-1 {
+  animation: fadeInUp 0.5s ease-out 0.1s both;
+}
+
+.animate-fade-in-delay-2 {
+  animation: fadeInUp 0.5s ease-out 0.2s both;
+}
+
+.animate-fade-in-delay-3 {
+  animation: fadeInUp 0.5s ease-out 0.3s both;
+}
+
+/* ---- Pulse glow for live counter ---- */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+  50% {
+    box-shadow: 0 0 12px 2px rgba(59, 130, 246, 0.15);
+  }
+}
+
+.pulse-glow {
+  animation: pulseGlow 3s ease-in-out infinite;
 }

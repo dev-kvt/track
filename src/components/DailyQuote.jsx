@@ -32,14 +32,16 @@ export default function DailyQuote() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center h-full text-center px-6 py-8">
-      <Quote size={28} className="text-gray-200 dark:text-gray-700 mb-5 rotate-180" />
-      <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 font-medium italic leading-relaxed max-w-sm">
-        "{quote.text}"
-      </p>
-      <p className="text-sm text-gray-400 dark:text-gray-500 mt-4">
-        — {quote.author}
-      </p>
+    <div className="flex flex-col h-full w-full">
+      <div className="flex-1 flex flex-col items-center justify-center text-center px-2 py-4 sm:py-6">
+        <Quote size={24} className="text-gray-200 dark:text-gray-700 mb-4 rotate-180 shrink-0" />
+        <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 font-medium italic leading-relaxed">
+          "{quote.text}"
+        </p>
+        <p className="text-xs sm:text-sm text-gray-400 dark:text-gray-500 mt-3 font-medium">
+          — {quote.author}
+        </p>
+      </div>
     </div>
   );
 }

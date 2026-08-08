@@ -6,7 +6,8 @@ import DailyQuote from '../components/DailyQuote';
 import TimeOnEarth from '../components/TimeOnEarth';
 import { DashboardCard, SectionHeader } from '../components/DashboardCard';
 import { useTheme } from '../components/ThemeProvider';
-import { Moon, Sun, Calendar, Edit3, PlusCircle, Check, Sparkles } from 'lucide-react';
+import { Header, Footer } from '../components/Layout';
+import { Calendar, Edit3, PlusCircle, Check, Sparkles } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 import { useNavigate } from 'react-router-dom';
 
@@ -30,7 +31,7 @@ const HEATMAP_THEME = {
 
 export default function Dashboard() {
   const username = 'dev-kvt';
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const navigate = useNavigate();
 
   const [newTask, setNewTask] = useState('');
@@ -103,115 +104,126 @@ export default function Dashboard() {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addTask(); }
   };
 
+  const colorScheme = theme === 'dark' ? 'dark' : 'light';
+  const heatmapColors = theme === 'dark' ? { dark: HEATMAP_THEME.dark } : { light: HEATMAP_THEME.light };
+
   return (
-    <div className="min-h-screen bg-[#f8fafc] dark:bg-[#030303] text-gray-900 dark:text-gray-100 p-6 font-sans">
-      <div className="max-w-[1400px] mx-auto">
+    <div className="page-container bg-[#f8fafc] dark:bg-[#030303] text-gray-900 dark:text-gray-100 font-sans">
+      <Header />
 
-        <div className="flex items-center justify-end mb-6">
-          <button
-            onClick={toggleTheme}
-            className="p-2.5 rounded-full bg-white dark:bg-[#111] text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white border border-gray-200 dark:border-gray-800 hover:shadow-md transition-all duration-200"
-          >
-            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
-        </div>
+      <main className="page-content">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 
-        <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] xl:grid-cols-[1fr_420px] gap-5 sm:gap-6">
 
-          {/* LEFT — Analytics */}
-          <div className="flex flex-col gap-6">
-            <DashboardCard>
-              <SectionHeader icon={Calendar} title="Task Activity" />
-              <div className="w-full overflow-x-auto">
-                {activities.length > 0 ? (
-                  <ActivityCalendar
-                    data={activities}
-                    colorScheme="light"
-                    theme={{ light: HEATMAP_THEME.light }}
-                    blockSize={12}
-                    blockMargin={4}
-                    blockRadius={3}
-                    fontSize={12}
-                    hideTotalCount={true}
-                    hideColorLegend={false}
-                    renderBlock={(block, activity) =>
-                      React.cloneElement(block, {
-                        onClick: () => navigate(`/day/${activity.date}`),
-                        style: { ...block.props.style, cursor: 'pointer' },
-                      })
-                    }
+            {/* LEFT — Analytics */}
+            <div className="flex flex-col gap-5 sm:gap-6 min-w-0">
+              {/* Task Activity */}
+              <DashboardCard className="animate-fade-in">
+                <SectionHeader icon={Calendar} title="Task Activity" description="Your daily completed tasks" />
+                <div className="w-full overflow-x-auto calendar-scroll pb-1">
+                  {activities.length > 0 ? (
+                    <div className="min-w-[680px]">
+                      <ActivityCalendar
+                        data={activities}
+                        colorScheme={colorScheme}
+                        theme={heatmapColors}
+                        blockSize={12}
+                        blockMargin={4}
+                        blockRadius={3}
+                        fontSize={12}
+                        hideTotalCount={false}
+                        hideColorLegend={false}
+                        renderBlock={(block, activity) =>
+                          React.cloneElement(block, {
+                            onClick: () => navigate(`/day/${activity.date}`),
+                            style: { ...block.props.style, cursor: 'pointer' },
+                          })
+                        }
+                      />
+                    </div>
+                  ) : (
+                    <div className="animate-pulse h-28 bg-gray-100 dark:bg-gray-800/30 rounded-lg w-full" />
+                  )}
+                </div>
+              </DashboardCard>
+
+              {/* GitHub Activity */}
+              <DashboardCard className="animate-fade-in-delay-1">
+                <SectionHeader iconSvg={GITHUB_ICON} title="GitHub Activity" description="Contributions over the last year" />
+                <div className="w-full overflow-x-auto calendar-scroll pb-1">
+                  <div className="min-w-[680px]">
+                    <GitHubCalendar
+                      username={username}
+                      colorScheme={colorScheme}
+                      theme={heatmapColors}
+                      fontSize={12}
+                      blockSize={12}
+                      blockMargin={4}
+                      blockRadius={3}
+                      hideTotalCount={false}
+                      hideColorLegend={false}
+                    />
+                  </div>
+                </div>
+              </DashboardCard>
+
+              {/* LeetCode Activity */}
+              <DashboardCard className="animate-fade-in-delay-2">
+                <SectionHeader iconSvg={LEETCODE_ICON} title="LeetCode Activity" description="Problem solving consistency" />
+                <LeetCodeCalendar username={username} />
+              </DashboardCard>
+            </div>
+
+            {/* RIGHT — Sidebar */}
+            <div className="flex flex-col gap-5 sm:gap-6 lg:sticky lg:top-20 lg:self-start">
+              {/* Quick Log */}
+              <DashboardCard className="animate-fade-in-delay-1">
+                <SectionHeader icon={Edit3} title="Quick Log" description="Log what you accomplished" />
+                <form onSubmit={addTask} className="flex flex-col">
+                  {error && (
+                    <div className="mb-4 p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 rounded-xl text-sm text-red-600 dark:text-red-400">
+                      {error}
+                    </div>
+                  )}
+                  {success && (
+                    <div className="mb-4 p-3 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 rounded-xl text-sm text-green-700 dark:text-green-400 flex items-center gap-2">
+                      <Check size={16} /> Logged to your activity graph!
+                    </div>
+                  )}
+                  <textarea
+                    value={newTask}
+                    onChange={(e) => setNewTask(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="E.g., Built auth flow, solved 2 LC problems..."
+                    className="min-h-[120px] w-full p-4 bg-gray-50 dark:bg-[#111] text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 placeholder-gray-400 transition-all resize-none text-[15px] leading-relaxed"
                   />
-                ) : (
-                  <div className="animate-pulse h-28 bg-gray-100 dark:bg-gray-800/30 rounded-lg w-full" />
-                )}
-              </div>
-            </DashboardCard>
+                  <button
+                    type="submit"
+                    className="mt-4 w-full py-3 bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 dark:text-gray-900 text-white rounded-xl flex items-center justify-center gap-2 transition-all duration-200 font-semibold text-sm active:scale-[0.98] shadow-sm"
+                  >
+                    <PlusCircle size={18} />
+                    Add to Activity
+                  </button>
+                </form>
+              </DashboardCard>
 
-            <DashboardCard>
-              <SectionHeader iconSvg={GITHUB_ICON} title="GitHub Activity" description="Contributions over the last year" />
-              <div className="w-full overflow-x-auto">
-                <GitHubCalendar
-                  username={username}
-                  colorScheme="light"
-                  theme={{ light: HEATMAP_THEME.light }}
-                  fontSize={12}
-                  blockSize={12}
-                  blockMargin={4}
-                  blockRadius={3}
-                  hideTotalCount={true}
-                  hideColorLegend={false}
-                />
-              </div>
-            </DashboardCard>
+              {/* Time On Earth */}
+              <DashboardCard className="animate-fade-in-delay-2 pulse-glow">
+                <TimeOnEarth />
+              </DashboardCard>
 
-            <DashboardCard>
-              <SectionHeader iconSvg={LEETCODE_ICON} title="LeetCode Activity" description="Problem solving consistency" />
-              <LeetCodeCalendar username={username} />
-            </DashboardCard>
+              {/* Daily Quote */}
+              <DashboardCard className="animate-fade-in-delay-3">
+                <DailyQuote />
+              </DashboardCard>
+            </div>
+
           </div>
-
-          {/* RIGHT — Logging + Motivation */}
-          <div className="flex flex-col gap-6">
-            <DashboardCard className="flex-1 flex flex-col">
-              <SectionHeader icon={Edit3} title="Quick Log" />
-              <form onSubmit={addTask} className="flex-1 flex flex-col">
-                {error && (
-                  <div className="mb-4 p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 rounded-xl text-sm text-red-600 dark:text-red-400">
-                    {error}
-                  </div>
-                )}
-                {success && (
-                  <div className="mb-4 p-3 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 rounded-xl text-sm text-green-700 dark:text-green-400 flex items-center gap-2">
-                    <Check size={16} /> Logged to your activity graph!
-                  </div>
-                )}
-                <textarea
-                  value={newTask}
-                  onChange={(e) => setNewTask(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  className="flex-1 min-h-[120px] w-full p-4 bg-gray-50 dark:bg-[#111] text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 placeholder-gray-400 transition-all resize-none text-[15px] leading-relaxed"
-                />
-                <button
-                  type="submit"
-                  className="mt-4 w-full py-3 bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 dark:text-gray-900 text-white rounded-xl flex items-center justify-center gap-2 transition-all font-semibold text-sm active:scale-[0.98]"
-                >
-                  <PlusCircle size={18} />
-                  Add to Activity
-                </button>
-              </form>
-            </DashboardCard>
-
-            <DashboardCard>
-              <TimeOnEarth />
-            </DashboardCard>
-
-            <DashboardCard className="flex-1 flex items-center justify-center">
-              <DailyQuote />
-            </DashboardCard>
-          </div>
-
         </div>
-      </div>
+      </main>
+
+      <Footer />
     </div>
   );
 }

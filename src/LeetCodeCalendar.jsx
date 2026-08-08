@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { ActivityCalendar } from 'react-activity-calendar';
 import { format, fromUnixTime } from 'date-fns';
+import { useTheme } from './components/ThemeProvider';
+
+const HEATMAP_THEME = {
+  light: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'],
+  dark: ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'],
+};
 
 const LeetCodeCalendar = ({ username }) => {
   const [data, setData] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -134,48 +141,51 @@ const LeetCodeCalendar = ({ username }) => {
     fetchData();
   }, [username]);
 
+  const colorScheme = theme === 'dark' ? 'dark' : 'light';
+  const heatmapColors = theme === 'dark' ? { dark: HEATMAP_THEME.dark } : { light: HEATMAP_THEME.light };
+
   if (loading) return <div className="animate-pulse h-28 bg-gray-100 dark:bg-gray-800/30 rounded-lg w-full" />;
   if (error) return <div className="text-sm text-red-500 p-3 bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-200 dark:border-red-900">Failed to load LeetCode data.</div>;
 
   return (
     <div>
       {stats && (
-        <div className="flex items-center gap-3 mb-4 w-fit">
-          <div className="flex items-center gap-4 bg-gray-50 dark:bg-[#111] px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-800 text-sm">
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          <div className="flex items-center gap-3 sm:gap-4 bg-gray-50 dark:bg-[#111] px-3 sm:px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-800 text-sm">
             <div className="flex flex-col items-center px-1">
-              <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Total</span>
-              <span className="font-semibold text-gray-900 dark:text-gray-100">{stats.total}</span>
+              <span className="text-[9px] sm:text-[10px] text-gray-500 uppercase tracking-widest font-bold">Total</span>
+              <span className="font-semibold text-gray-900 dark:text-gray-100 tabular-nums">{stats.total}</span>
             </div>
             <div className="h-7 w-px bg-gray-200 dark:bg-gray-800" />
             <div className="flex flex-col items-center px-1">
-              <span className="text-[10px] text-green-600 dark:text-green-500 uppercase tracking-widest font-bold">Easy</span>
-              <span className="font-semibold text-gray-900 dark:text-gray-100">{stats.easy}</span>
+              <span className="text-[9px] sm:text-[10px] text-green-600 dark:text-green-500 uppercase tracking-widest font-bold">Easy</span>
+              <span className="font-semibold text-gray-900 dark:text-gray-100 tabular-nums">{stats.easy}</span>
             </div>
             <div className="flex flex-col items-center px-1">
-              <span className="text-[10px] text-yellow-600 dark:text-yellow-500 uppercase tracking-widest font-bold">Med</span>
-              <span className="font-semibold text-gray-900 dark:text-gray-100">{stats.medium}</span>
+              <span className="text-[9px] sm:text-[10px] text-yellow-600 dark:text-yellow-500 uppercase tracking-widest font-bold">Med</span>
+              <span className="font-semibold text-gray-900 dark:text-gray-100 tabular-nums">{stats.medium}</span>
             </div>
             <div className="flex flex-col items-center px-1">
-              <span className="text-[10px] text-red-600 dark:text-red-500 uppercase tracking-widest font-bold">Hard</span>
-              <span className="font-semibold text-gray-900 dark:text-gray-100">{stats.hard}</span>
+              <span className="text-[9px] sm:text-[10px] text-red-600 dark:text-red-500 uppercase tracking-widest font-bold">Hard</span>
+              <span className="font-semibold text-gray-900 dark:text-gray-100 tabular-nums">{stats.hard}</span>
             </div>
           </div>
         </div>
       )}
-      <div className="w-full overflow-x-auto">
-        <ActivityCalendar
-          data={data}
-          colorScheme="light"
-          theme={{
-            light: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39']
-          }}
-          blockSize={12}
-          blockMargin={4}
-          blockRadius={3}
-          fontSize={12}
-          hideTotalCount={true}
-          hideColorLegend={false}
-        />
+      <div className="w-full overflow-x-auto calendar-scroll pb-1">
+        <div className="min-w-[680px]">
+          <ActivityCalendar
+            data={data}
+            colorScheme={colorScheme}
+            theme={heatmapColors}
+            blockSize={12}
+            blockMargin={4}
+            blockRadius={3}
+            fontSize={12}
+            hideTotalCount={false}
+            hideColorLegend={false}
+          />
+        </div>
       </div>
     </div>
   );
