@@ -3,7 +3,7 @@ import { Clock } from 'lucide-react';
 import { SectionHeader } from './DashboardCard';
 
 export default function TimeOnEarth() {
-  const dob = new Date('2005-04-23T00:00:00');
+  const dob = new Date('2004-04-23T00:00:00');
   
   const [time, setTime] = useState({
     years: 0,
@@ -49,7 +49,7 @@ export default function TimeOnEarth() {
 
   return (
     <div className="flex flex-col h-full w-full">
-      <SectionHeader icon={Clock} title="Time on Earth" description="Since Apr 23, 2005" />
+      <SectionHeader icon={Clock} title="Time on Earth" description="Since Apr 23, 2004" />
       <div className="flex-1 flex items-center justify-center p-2">
         <div className="grid grid-cols-3 md:grid-cols-6 gap-2 sm:gap-4 w-full">
           {[
